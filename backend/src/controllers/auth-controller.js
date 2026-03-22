@@ -28,7 +28,7 @@ export async function signup(req, resp) {
     }
 
     const idx = Math.floor(Math.random() * 100) + 1; // generate a num between 1-100
-    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
+    const randomAvatar = `https://avatar-api-90n9.onrender.com/public/${idx}`
 
     const newUser = await User.create({
       fullName,
@@ -114,7 +114,7 @@ export async function onboard(req, resp) {
     if(!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
     return resp.status(400).json({
       message: "All fields are required",
-      missingFileds: [
+      missingFields: [
         !fullName && "fullName",
         !bio && "bio",
         !nativeLanguage && "nativeLanguage",
@@ -139,7 +139,7 @@ export async function onboard(req, resp) {
     });
     console.log(`Stream user updated after onboarding for ${updatedUser.fullName}`);
   } catch (streamError) {
-     
+     console.error("Error updating Stream user during onboarding:", streamError);
   }
 
   resp.status(200).json({success: true, user: updatedUser});

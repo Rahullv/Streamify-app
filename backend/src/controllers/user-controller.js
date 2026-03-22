@@ -10,7 +10,7 @@ export async function getRecommendedUsers(req, resp){
                $and: [
                     {_id: {$ne : currentUserId }}, // exclude current user
                     {_id: {$nin: currentUser.friends }}, // exclude the current user's friends
-                    {_isOnboarded: true},
+                    {isOnboarded: true},
                ],
           });
           resp.status(200).json(recommendedUsers);
@@ -35,7 +35,7 @@ export async function getMyFriends(req, resp){
 
 export async function sendFriendRequest(req, resp){
      try {
-          const myId = req.user.id;
+          const myId = req.user._id;
           const { id: recipientId } = req.params;
 
           // prevent sending request to yourself
@@ -81,7 +81,7 @@ export async function sendFriendRequest(req, resp){
 export async function acceptFriendRequest(req, res) {
      try {
           const {id: requestId } = req.params;
-          const friendRequest = await friendRequest.findById(requestId);
+          const friendRequest = await FriendRequest.findById(requestId);
 
           if(!friendRequest) {
                return res.status(400).json({ message: "Friend request not found"});
@@ -118,7 +118,7 @@ export async function getFriendRequest(req, res) {
           const incomingReqs = await FriendRequest.find({
                recipient: req.user.id,
                status: "pending",
-          }).populate("recipient", "fullName profilePic nativeLanguage learningLanguage");
+          }).populate("sender", "fullName profilePic nativeLanguage learningLanguage");
 
           const acceptedReqs = await FriendRequest.find({
                sender: req.user.id,
