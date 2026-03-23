@@ -28,12 +28,17 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chats", chatRoutes);
 
-if(process.env.NODE_ENV === "production") {
-     app.use(express.static(path.join(__dirname, "../frontend/dist")));
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-     app.get(/^\/(?!api).*/,(req,resp) => {
-          resp.sendFile(path.join(__dirname, "..frontend/dist/index.html"));
-     })
+  // ✅ FIXED fallback route (handles /call/:id, /login, etc.)
+  app.use((req, res) => {
+    if (req.originalUrl.startsWith("/api")) {
+      return res.status(404).json({ message: "API route not found" });
+    }
+
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  });
 }
 
 
